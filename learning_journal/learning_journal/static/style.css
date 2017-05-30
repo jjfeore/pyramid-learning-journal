@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+header a, a:hover, a:visited {
+    color: #999;
+    text-decoration: none;
+}
+
+.nav-link {
+    height: 3vw;
+    line-height: 2vw;
+    font-size: 1.5vw;
+    background-color: #444;
+    color: #999;
+    padding: 0.5vw; 
+    font-weight: bold;
+}
+
+.pager-row {
+    display: inline-block;
+}
+
+.pager {
+    display: inline-block;
+    width: 1.5vw;
+    height: 1.5vw;
+}
+
+.next-link {
+    border: 1px solid black;
+}
+
+#button-blue {
+    background-color: #337ab7;
+    color: white;
+    padding: 6px 12px 6px 12px;
+    border: 1px solid rgb(36, 85, 128);
+    border-radius: 4px;
+}
+
+#button-grey {
+    padding: 6px 12px 6px 12px;
+    border: 1px solid rgb(36, 85, 128);
+    border-radius: 4px;
+}
+
+.byline {
+    margin-left: 14px;
+    color: #999;
+}
+
+#detail-entry {
+    margin-top: 40px;
+}
+
+.input-header {
+    font-weight: bold;
+    display: block;
+}
+
+#input-title {
+    padding: 6px 12px 6px 12px;
+    display: block;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 4px;
+    width: 100%;
+}
+
+#input-text {
+    padding: 6px 12px 6px 12px;
+    display: block;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 4px;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
