@@ -1,6 +1,7 @@
 """Set up the default views."""
 from pyramid.response import Response
 from os import path
+from data.entries import ENTRIES
 
 
 HERE = path.dirname(__file__)
