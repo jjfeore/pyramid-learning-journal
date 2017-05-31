@@ -1,35 +1,49 @@
 """Set up the default views."""
-from pyramid.response import Response
-from os import path
+from pyramid.view import view_config
+from pyramid.httpexceptions import HTTPNotFound
 from data.entries import ENTRIES
 
 
-HERE = path.dirname(__file__)
-
-
+@view_config(route_name='list', renderer='../templates/list.jinja2')
 def list_view(request):
     """Return index.html."""
-    with open(path.join(HERE, '../templates/index.html')) as web_page:
-        ret_page = web_page.read()
-    return Response(ret_page)
+    return {
+        'page': 'Home',
+        'entry': 'entries'
+    }
 
 
+@view_config(route_name='list', renderer='../templates/detail.jinja2')
 def detail_view(request):
     """Return detail.html."""
-    with open(path.join(HERE, '../templates/detail.html')) as web_page:
-        ret_page = web_page.read()
-    return Response(ret_page)
+    the_id = int(request.matchdict['id'])
+    try:
+        entry = ENTRIES[the_id]
+    except IndexError:
+        raise HTTPNotFound
+    return {
+        'page': 'Home',
+        'entry': entry
+    }
 
 
+@view_config(route_name='list', renderer='../templates/new.jinja2')
 def create_view(request):
     """Return new.html."""
-    with open(path.join(HERE, '../templates/new.html')) as web_page:
-        ret_page = web_page.read()
-    return Response(ret_page)
+    return {
+        'page': 'New Entry'
+    }
 
 
+@view_config(route_name='list', renderer='../templates/edit.jinja2')
 def update_view(request):
-    """Return edit.html."""
-    with open(path.join(HERE, '../templates/edit.html')) as web_page:
-        ret_page = web_page.read()
-    return Response(ret_page)
+    """Return new.html."""
+    the_id = int(request.matchdict['id'])
+    try:
+        entry = ENTRIES[the_id]
+    except IndexError:
+        raise HTTPNotFound
+    return {
+        'page': 'Edit Entry',
+        'entry': entry
+    }
