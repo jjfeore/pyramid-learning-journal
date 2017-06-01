@@ -17,9 +17,12 @@ def list_view(request):
 def detail_view(request):
     """Return  the detail view."""
     the_id = int(request.matchdict['id'])
-    try:
-        entry = ENTRIES[the_id]
-    except IndexError:
+    entry = None
+    for post in ENTRIES:
+        if post['id'] == the_id:
+            entry = post
+            break
+    if not entry:
         raise HTTPNotFound
     return {
         'page': entry['title'],
