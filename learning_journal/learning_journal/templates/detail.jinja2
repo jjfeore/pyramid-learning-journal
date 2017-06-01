@@ -1,0 +1,10 @@
+{% extends "layout.jinja2" %}
+{% block content %}
+    <div class="row" id="detail-entry">
+        <h2>{{ entry.title }}</h2>
+        <div class="byline">By {{ entry.username }} — {{ entry.date }}</div>
+        <div class="post-body">{{ entry.text }}</div>
+        <a href="/journal/{{ entry.id }}/edit-entry"><input type="button" class="btn btn-primary" value="Edit Entry"></a>
+        <hr>
+    </div>
+{% endblock %}

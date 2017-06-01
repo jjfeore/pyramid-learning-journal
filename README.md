@@ -15,6 +15,29 @@ Completed HTML/CSS mockups for the learning journal pages.
 *May 30, 2017*
 Added routes/views, completed tests, and deployed to Heroku at https://learning-journal-jjfeore.herokuapp.com/
 
+*May 31, 2017*
+Added Jinja2 templating. Test output below.
+```
+---------- coverage: platform linux2, python 2.7.13-final-0 ----------
+Name                                Stmts   Miss  Cover
+-------------------------------------------------------
+learning_journal/views/default.py      21      0   100%
+
+8 passed in 0.88 seconds
+
+----------- coverage: platform linux, python 3.5.3-final-0 -----------
+Name                                Stmts   Miss  Cover
+-------------------------------------------------------
+learning_journal/views/default.py      21      0   100%
+
+8 passed in 1.21 seconds
+___________________________________________________________________________________ summary ____________________________________________________________________________________
+  py27: commands succeeded
+  py35: commands succeeded
+  congratulations :)
+  ```
+
+
 ## Routes:
 
 - `/` - the home page and a listing of all journal entries
