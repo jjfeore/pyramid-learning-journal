@@ -15,6 +15,9 @@ Completed HTML/CSS mockups for the learning journal pages.
 *May 30, 2017*
 Added routes/views, completed tests, and deployed to Heroku at https://learning-journal-jjfeore.herokuapp.com/
 
+*May 31, 2017*
+Added Jinja2 templating.
+
 ## Routes:
 
 - `/` - the home page and a listing of all journal entries
