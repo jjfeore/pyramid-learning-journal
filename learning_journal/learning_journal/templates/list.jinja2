@@ -8,7 +8,7 @@
         <div class="col-md-10">
             {% for post in entry %}
             <div class="row entry-row">
-                <h2><a href="/journal/1">{{ post.title }}</a></h2>
+                <h2><a href="/journal/{{ post.id }}">{{ post.title }}</a></h2>
                 <div class="byline">By {{ post.username }} — {{ post.date }}</div>
                 <div class="post-body">{{ post.text }}</div>
             </div>
