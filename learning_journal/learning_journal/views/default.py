@@ -1,15 +1,17 @@
 """Set up the default views."""
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
-from learning_journal.views.data.entries import ENTRIES
+from learning_journal.models import JournalEntries
 
 
 @view_config(route_name='list', renderer='../templates/list.jinja2')
 def list_view(request):
     """Return the list view."""
+    session = request.dbsession
+    entry = session.query(JournalEntries).all()
     return {
         'page': 'Home',
-        'entry': ENTRIES
+        'entry': entry
     }
 
 
@@ -17,15 +19,12 @@ def list_view(request):
 def detail_view(request):
     """Return  the detail view."""
     the_id = int(request.matchdict['id'])
-    entry = None
-    for post in ENTRIES:
-        if post['id'] == the_id:
-            entry = post
-            break
+    session = request.dbsession
+    entry = session.query(JournalEntries).get(the_id)
     if not entry:
         raise HTTPNotFound
     return {
-        'page': entry['title'],
+        'page': entry.title,
         'entry': entry
     }
 
@@ -42,9 +41,9 @@ def create_view(request):
 def update_view(request):
     """Return the update view."""
     the_id = int(request.matchdict['id'])
-    try:
-        entry = ENTRIES[the_id]
-    except IndexError:
+    session = request.dbsession
+    entry = session.query(JournalEntries).get(the_id)
+    if not entry:
         raise HTTPNotFound
     return {
         'page': 'Edit Entry',

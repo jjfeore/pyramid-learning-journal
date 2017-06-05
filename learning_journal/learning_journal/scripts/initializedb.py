@@ -47,10 +47,10 @@ def main(argv=sys.argv):
         all_models = []
         for post in ENTRIES:
             new_entry = JournalEntries(
-                title=post.title,
-                date=post.date,
-                author=post.author,
-                text=post.text
+                title=post['title'],
+                date=post['date'],
+                author=post['author'],
+                text=post['text']
             )
             all_models.append(new_entry)
         dbsession.add_all(all_models)
