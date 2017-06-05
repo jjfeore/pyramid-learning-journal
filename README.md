@@ -37,6 +37,12 @@ ________________________________________________________________________________
   congratulations :)
   ```
 
+*June 2, 2017*
+Started work on step 3. Got the basics worked and have to debug and add tests.
+
+
+*June 4, 2017*
+Finished step 3 and step 4, with the exception of tests. Everything works on a functional level, but nothing is technically tested.
 
 ## Routes:
 
