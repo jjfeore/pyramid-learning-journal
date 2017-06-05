@@ -9,7 +9,7 @@
             {% for post in entry %}
             <div class="row entry-row">
                 <h2><a href="/journal/{{ post.id }}">{{ post.title }}</a></h2>
-                <div class="byline">By {{ post.username }} — {{ post.date }}</div>
+                <div class="byline">By {{ post.author }} — {{ post.date }}</div>
                 <div class="post-body">{{ post.text }}</div>
             </div>
             {% endfor %}

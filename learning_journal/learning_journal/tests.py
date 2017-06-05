@@ -198,7 +198,6 @@ def test_list_route_returns_list_content(testapp):
     response = testapp.get('/')
     html = response.html
     post_count = html.find_all('section')
-    import pdb; pdb.set_trace()
     assert html.find('h2').text in JOURNAL_ENTRIES[0].title
     assert len(post_count) == len(JOURNAL_ENTRIES)
 
