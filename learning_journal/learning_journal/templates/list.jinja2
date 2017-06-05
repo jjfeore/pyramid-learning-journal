@@ -1,0 +1,21 @@
+{% extends "layout.jinja2" %}
+{% block content %}
+    <div class="row">
+        <h1>Today I Learned ... <small>401 Python Learning Journal</small></h1>
+        <hr>
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            {% for post in entry %}
+            <div class="row entry-row">
+                <h2><a href="/journal/{{ post.id }}">{{ post.title }}</a></h2>
+                <div class="byline">By {{ post.author }} — {{ post.date }}</div>
+                <div class="post-body">{{ post.text }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-2">
+            <a href="/journal/new-entry"><input type="button" class="btn btn-primary" value="Add a New Entry"></a>
+        </div>
+    </div>
+{% endblock %}
