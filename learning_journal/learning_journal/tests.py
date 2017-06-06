@@ -12,11 +12,13 @@ import transaction
 
 FAKE_FACTORY = Faker()
 JOURNAL_ENTRIES = [JournalEntries(
-    author=FAKE_FACTORY.name(),
+    title=FAKE_FACTORY.text(300),
     text=FAKE_FACTORY.text(300),
-    date=datetime.datetime.now().strftime('%B %d, %Y'),
-    title=FAKE_FACTORY.text(300)
+    author=FAKE_FACTORY.name(),
+    date=datetime.datetime.now().strftime('%B %d, %Y')
 ) for i in range(20)]
+
+random_entries = []
 
 
 @pytest.fixture
@@ -29,7 +31,7 @@ def add_models(dummy_request):
 def configuration(request):
     """Set up a Configurator instance."""
     config = testing.setUp(settings={
-        'sqlalchemy.url': 'postgres:///test_journal'
+        'sqlalchemy.url': 'postgres://postgres:1234@localhost:5432/test_journal'
     })
     config.include("learning_journal.models")
 
@@ -46,11 +48,11 @@ def db_session(configuration, request):
     SessionFactory = configuration.registry["dbsession_factory"]
     session = SessionFactory()
     engine = session.bind
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
     def teardown():
         session.transaction.rollback()
-        Base.metadata.drop_all(engine)
 
     request.addfinalizer(teardown)
     return session
@@ -107,7 +109,6 @@ def testapp(request):
 
     def main(global_config, **settings):
         """Return a Pyramid WSGI application."""
-        settings['sqlalchemy.url'] = 'postgres:///test_journal'
         config = Configurator(settings=settings)
         config.include('pyramid_jinja2')
         config.include('.models')
@@ -115,7 +116,9 @@ def testapp(request):
         config.scan()
         return config.make_wsgi_app()
 
-    app = main({})
+    app = main({}, **{
+        'sqlalchemy.url': 'postgres://postgres:1234@localhost:5432/test_journal'
+    })
     testapp = TestApp(app)
 
     SessionFactory = app.registry["dbsession_factory"]
@@ -136,70 +139,40 @@ def fill_the_db(testapp):
     SessionFactory = testapp.app.registry["dbsession_factory"]
     with transaction.manager:
         dbsession = get_tm_session(SessionFactory, transaction.manager)
-        dbsession.add_all(JOURNAL_ENTRIES)
-
-    return dbsession
-
-
-# def test_list_view_returns_content(list_response):
-#     """List view response includes content."""
-#     assert 'page' in list_response
-#     assert 'entry' in list_response
-#     assert list_response['entry'] == entry
-
-
-# def test_create_view_returns_content(create_response):
-#     """Create view response includes content."""
-#     assert 'page' in create_response
+        for i in range(20):
+            the_title = FAKE_FACTORY.text(300)
+            the_text = FAKE_FACTORY.text(300)
+            the_author = FAKE_FACTORY.name()
+            the_date = datetime.datetime.now().strftime('%B %d, %Y')
+            random_entries.append([the_title, the_text, the_author, the_date])
+            row = JournalEntries(
+                title=the_title,
+                text=the_text,
+                author=the_author,
+                date=the_date
+            )
+            dbsession.add(row)
 
 
-# def test_detail_view_returns_content(detail_response):
-#     """Detail view response includes content."""
-#     assert 'page' in detail_response
-#     assert 'entry' in detail_response
-#     assert detail_response['entry'] == ENTRIES[0]
+def test_detail_view_with_id_raises_except(dummy_request):
+    """Calling the detail view route with an invalid id returns an error."""
+    from learning_journal.views.default import detail_view
+    dummy_request.matchdict['id'] = '1000'
+    with pytest.raises(HTTPNotFound):
+        detail_view(dummy_request)
 
 
-# def test_update_view_returns_content(update_response):
-#     """Detail view response includes content."""
-#     assert 'page' in update_response
-#     assert 'entry' in update_response
-#     assert update_response['entry'] == ENTRIES[0]
+def test_update_view_with_id_raises_except(dummy_request):
+    """Calling the update view route with an invalid id returns an error."""
+    from learning_journal.views.default import update_view
+    dummy_request.matchdict['id'] = '1000'
+    with pytest.raises(HTTPNotFound):
+        update_view(dummy_request)
 
 
-# def test_detail_view_with_id_raises_except():
-#     """."""
-#     from learning_journal.views.default import detail_view
-#     request = testing.DummyRequest()
-#     request.matchdict['id'] = '1000'
-#     with pytest.raises(HTTPNotFound):
-#         detail_view(request)
-
-
-# def test_update_view_with_id_raises_except():
-#     """."""
-#     from learning_journal.views.default import update_view
-#     request = testing.DummyRequest()
-#     request.matchdict['id'] = '1000'
-#     with pytest.raises(HTTPNotFound):
-#         update_view(request)
-
-
-# def test_entries():
-#     """Test validity of dictionary."""
-#     assert type(ENTRIES[0]) == dict
-
-
-# # ++++++++ Functional Tests +++++++++ #
-
-
-def test_list_route_returns_list_content(testapp):
-    """Test list route creates page that has list entries."""
-    response = testapp.get('/')
-    html = response.html
-    post_count = html.find_all('section')
-    assert html.find('h2').text in JOURNAL_ENTRIES[0].title
-    assert len(post_count) == len(JOURNAL_ENTRIES)
+def test_entries():
+    """Test if the rand-generated entries are valid Journal Entries."""
+    assert isinstance(JOURNAL_ENTRIES[0], JournalEntries)
 
 
 def test_model_gets_added(db_session):
@@ -235,3 +208,70 @@ def test_list_view_returns_count_matching_database(dummy_request, add_models):
     response = list_view(dummy_request)
     query = dummy_request.dbsession.query(JournalEntries)
     assert len(response['entry']) == query.count()
+
+
+def test_create_view_post_empty_is_empty_dict(dummy_request):
+    """POST requests should return empty dictionary."""
+    from learning_journal.views.default import create_view
+    dummy_request.method = 'POST'
+    response = create_view(dummy_request)
+    assert response == {}
+
+
+def test_create_view_post_incomplete_data_returns_data(dummy_request):
+        """Incomplete POST data returned to user."""
+        from learning_journal.views.default import create_view
+        dummy_request.method = "POST"
+        post_data = {
+            'title': '',
+            'text': FAKE_FACTORY.text(300),
+            'error': "Please fill all form elements."
+        }
+        dummy_request.POST = post_data
+        response = create_view(dummy_request)
+        assert response == post_data
+
+
+def test_create_view_post_with_data_302(dummy_request):
+        """POST request with correct data should redirect with status code 302."""
+        from learning_journal.views.default import create_view
+        dummy_request.method = "POST"
+        post_data = {
+            'title': FAKE_FACTORY.text(50),
+            'text': FAKE_FACTORY.text(300)
+        }
+        dummy_request.POST = post_data
+        import pdb; pdb.set_trace()
+        response = create_view(dummy_request)
+        assert response.status_code == 302
+
+
+# def test_list_route_returns_list_content(testapp, fill_the_db):
+#     """Test list route creates page that has list entries."""
+#     response = testapp.get('/')
+#     html = response.html
+#     post_count = html.find_all('h2')
+#     assert html.find('h2').text in random_entries[-1][0]
+#     assert len(post_count) == len(JOURNAL_ENTRIES)
+
+
+# def test_list_view_returns_dict(dummy_request):
+#     """List view returns a dictionary of values."""
+#     from learning_journal.views.default import list_view
+#     response = list_view(dummy_request)
+#     assert isinstance(response, dict)
+
+
+# def test_list_view_returns_empty_when_database_empty(dummy_request):
+#     """List view returns nothing when there is no data."""
+#     from learning_journal.views.default import list_view
+#     response = list_view(dummy_request)
+#     assert len(response['entry']) == 0
+
+
+# def test_list_view_returns_count_matching_database(dummy_request, add_models):
+#     """List view response matches database count."""
+#     from learning_journal.views.default import list_view
+#     response = list_view(dummy_request)
+#     query = dummy_request.dbsession.query(JournalEntries)
+#     assert len(response['entry']) == query.count()
