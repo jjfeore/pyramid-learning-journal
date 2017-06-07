@@ -2,6 +2,7 @@
 
 ## Unit tests: view functions
 - list_view populates list template with journal entries
+    *test_list_route_returns_list_content*
 - detail_view populates detail template with journal entry that matches request id
 - update_view populates form with journal entry that matches request id (when 'update' route hit with GET method)
 - update_view accepts valid POST request
@@ -9,14 +10,19 @@
 - create_view accepts valid POST request
 - create_view raises error if POST request missing data
 - detail_view raises HTTPNotFound error if JournalEntries doesn't exist
+    *test_detail_view_with_id_raises_except*
 - update_view raises HTTPNotFound error if JournalEntries doesn't exist
+    *test_update_view_with_id_raises_except*
 
 ## Unit tests: models
 - generated journal entries are instances of JournalEntries model class 
+    *test_entries*
 - model can be added successfully to database
 - model can be updated in database
 - list view returns empty when database empty
+    *test_list_view_returns_empty_when_database_empty*
 - list view shows same number of items as database
+    *test_list_view_returns_count_matching_database*
 
 ## Functional tests: system
 - update_view redirects to detail view of journal entry
