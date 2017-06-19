@@ -14,8 +14,15 @@
             </div>
             {% endfor %}
         </div>
+        {% if userauth %}
         <div class="col-md-2">
             <a href="/journal/new-entry"><input type="button" class="btn btn-primary" value="Add a New Entry"></a>
         </div>
+        {% endif %}
     </div>
+    {% if userauth %}
+        <a href='/logout'><input type="button" class="btn btn-default" value="Log out" /></a>
+    {% else %}
+        <a href='/login'><input type="button" class="btn btn-default" value="Log in" /></a>
+    {% endif %}
 {% endblock %}
